@@ -27,6 +27,7 @@ end
 basename = File.basename(f, File.extname(f))
 html_name = basename + ".html"
 content = File.read(f)
+script_dir = File.expand_path(File.dirname(__FILE__)) + "/"
 
 $title = basename.capitalize
 if content.match(/^# (.*?)$/)
@@ -52,7 +53,7 @@ end
 html = Kramdown::Document.new(content).to_html
 $content = html.gsub(/^/, "    ")
 
-output = ERB.new(File.read("template.rhtml")).result
+output = ERB.new(File.read(script_dir + "template.rhtml")).result
 
 File.open(html_name, "w") { |o| o << output }
 
