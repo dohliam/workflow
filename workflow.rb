@@ -13,6 +13,7 @@ OptionParser.new do |opts|
   opts.on("-f", "--fixes", "Fixes some common display problems with pdfs") { options[:fixes] = true }
   opts.on("-o", "--output NAME", "Basename of output file (by default same as input file)") { |v| options[:output] = v }
   opts.on("-p", "--pdf", "Create pdf instead of html") { options[:pdf] = true }
+  opts.on("-n", "--numbers", "Add a footer with page numbers") { options[:numbers] = true }
   opts.on("-s", "--stylesheet NAME", "Specify name of stylesheet to use instead of CSS switcher") { |v| options[:stylesheet] = v }
 
 end.parse!
@@ -63,5 +64,9 @@ if options[:output]
 end
 
 if options[:pdf]
-  `wkhtmltopdf '#{basename}.html' '#{outfile}.pdf'`
+  if options[:numbers]
+    `wkhtmltopdf --footer-center "[page]" '#{basename}.html' '#{outfile}.pdf'`
+  else
+    `wkhtmltopdf '#{basename}.html' '#{outfile}.pdf'`
+  end
 end
