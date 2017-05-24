@@ -11,6 +11,7 @@ OptionParser.new do |opts|
   opts.banner = "Usage: workflow.rb [options] [filename]"
 
   opts.on("-f", "--fixes", "Fixes some common display problems with pdfs") { options[:fixes] = true }
+  opts.on("-h", "--header TEXT", "Add arbitrary header text to top of each pdf page") { |v| options[:header] = v }
   opts.on("-o", "--output NAME", "Basename of output file (by default same as input file)") { |v| options[:output] = v }
   opts.on("-p", "--pdf", "Create pdf instead of html") { options[:pdf] = true }
   opts.on("-n", "--numbers", "Add a footer with page numbers") { options[:numbers] = true }
@@ -66,6 +67,9 @@ end
 if options[:pdf]
   if options[:numbers]
     `wkhtmltopdf --footer-center "[page]" '#{basename}.html' '#{outfile}.pdf'`
+  elsif options[:header]
+    header = options[:header]
+    `wkhtmltopdf --header-right "#{header}" '#{basename}.html' '#{outfile}.pdf'`
   else
     `wkhtmltopdf '#{basename}.html' '#{outfile}.pdf'`
   end
