@@ -49,7 +49,7 @@ if options[:stylesheet]
   $switcher = ""
   padding = "\n    <style type=\"text/css\">\n      body {\n        padding-left: 24px;\n      }\n"
   close_tag = "    </style>\n"
-  $css = '    <link href="https://dohliam.github.io/dropin-minimal-css/vendor/' + name + '.min.css" type="text/css" rel="stylesheet">' + padding + fixes + close_tag
+  $css = '    <link href="https://dohliam.github.io/dropin-minimal-css/min/' + name + '.min.css" type="text/css" rel="stylesheet">' + padding + fixes + close_tag
 end
 
 html = Kramdown::Document.new(content).to_html
