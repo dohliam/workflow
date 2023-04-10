@@ -5,6 +5,7 @@
 require 'kramdown'
 require 'kramdown-parser-gfm'
 require 'optparse'
+require 'rinku'
 
 options = {}
 OptionParser.new do |opts|
@@ -57,10 +58,8 @@ if options[:highlighting]
   $pygments = '    <link rel="stylesheet" type="text/css" class="pygments-css" href="https://dohliam.github.io/pygments-css/solarized-light.css">'
 end
 
-# html = Kramdown::Document.new(content).to_html
-html = Kramdown::Document.new(content, input: 'GFM').to_html
+html = Rinku.auto_link(Kramdown::Document.new(content, input: 'GFM').to_html)
 $content = html
-# $content = html.gsub(/^/, "    ")
 
 output = ERB.new(File.read(script_dir + "template.rhtml")).result
 
