@@ -12,6 +12,7 @@ OptionParser.new do |opts|
   opts.banner = "Usage: workflow.rb [options] [filename]"
 
   opts.on("-c", "--code-highlighting", "Use code syntax highlighting") { options[:highlighting] = true }
+  opts.on("-C", "--code-style [STYLE]", "Specify style to use for syntax highlighting") { |v| options[:codestyle] = v }
   opts.on("-f", "--fixes", "Fixes some common display problems with pdfs") { options[:fixes] = true }
   opts.on("-h", "--header TEXT", "Add arbitrary header text to top of each pdf page") { |v| options[:header] = v }
   opts.on("-o", "--output NAME", "Basename of output file (by default same as input file)") { |v| options[:output] = v }
@@ -55,7 +56,8 @@ if options[:stylesheet]
 end
 
 if options[:highlighting]
-  $pygments = '    <link rel="stylesheet" type="text/css" class="pygments-css" href="https://dohliam.github.io/pygments-css/solarized-light.css">'
+  code_style = options[:codestyle] || "abap"
+  $pygments = "    <link rel=\"stylesheet\" type=\"text/css\" class=\"pygments-css\" href=\"https://dohliam.github.io/pygments-css/#{code_style}.css\">"
 end
 
 html = Rinku.auto_link(Kramdown::Document.new(content, input: 'GFM').to_html)
