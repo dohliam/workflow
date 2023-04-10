@@ -1,15 +1,16 @@
-#!/usr/bin/ruby
-# encoding: utf-8
+#!/usr/bin/env ruby
 
 # workflow.rb: Create rich css-enabled html and pdfs from markdown documents
 
 require 'kramdown'
+require 'kramdown-parser-gfm'
 require 'optparse'
 
 options = {}
 OptionParser.new do |opts|
   opts.banner = "Usage: workflow.rb [options] [filename]"
 
+  opts.on("-c", "--code-highlighting", "Use code syntax highlighting") { options[:highlighting] = true }
   opts.on("-f", "--fixes", "Fixes some common display problems with pdfs") { options[:fixes] = true }
   opts.on("-h", "--header TEXT", "Add arbitrary header text to top of each pdf page") { |v| options[:header] = v }
   opts.on("-o", "--output NAME", "Basename of output file (by default same as input file)") { |v| options[:output] = v }
@@ -52,8 +53,14 @@ if options[:stylesheet]
   $css = '    <link href="https://dohliam.github.io/dropin-minimal-css/min/' + name + '.min.css" type="text/css" rel="stylesheet">' + padding + fixes + close_tag
 end
 
-html = Kramdown::Document.new(content).to_html
-$content = html.gsub(/^/, "    ")
+if options[:highlighting]
+  $pygments = '    <link rel="stylesheet" type="text/css" class="pygments-css" href="https://dohliam.github.io/pygments-css/solarized-light.css">'
+end
+
+# html = Kramdown::Document.new(content).to_html
+html = Kramdown::Document.new(content, input: 'GFM').to_html
+$content = html
+# $content = html.gsub(/^/, "    ")
 
 output = ERB.new(File.read(script_dir + "template.rhtml")).result
 
@@ -66,11 +73,11 @@ end
 
 if options[:pdf]
   if options[:numbers]
-    `wkhtmltopdf --footer-center "[page]" '#{basename}.html' '#{outfile}.pdf'`
+    `wkhtmltopdf --enable-local-file-access --footer-center "[page]" '#{basename}.html' '#{outfile}.pdf'`
   elsif options[:header]
     header = options[:header]
-    `wkhtmltopdf --header-right "#{header}" '#{basename}.html' '#{outfile}.pdf'`
+    `wkhtmltopdf --enable-local-file-access --header-right "#{header}" '#{basename}.html' '#{outfile}.pdf'`
   else
-    `wkhtmltopdf '#{basename}.html' '#{outfile}.pdf'`
+    `wkhtmltopdf --enable-local-file-access '#{basename}.html' '#{outfile}.pdf'`
   end
 end
